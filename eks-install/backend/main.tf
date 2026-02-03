@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "todoapp-mcproject-s3-bucket"
+  bucket = "my-todoapp-mcproject-s3-bucket"
 
   lifecycle {
     prevent_destroy = false
