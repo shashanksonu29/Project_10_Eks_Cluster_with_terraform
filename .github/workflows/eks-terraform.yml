@@ -44,7 +44,7 @@ jobs:
     # ---------------- Terraform Plan ----------------
     - name: Terraform Plan
       working-directory: eks-install
-      run: terraform plan -out=tfplan
+      run: terraform plan -lock=false
 
     # ---------------- Terraform Apply ----------------
     - name: Terraform Apply
