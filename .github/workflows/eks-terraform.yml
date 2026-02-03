@@ -1,0 +1,61 @@
+name: EKS Cluster Provisioning with Terraform
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:   # allow manual trigger
+
+env:
+  AWS_REGION: us-east-1
+  TERRAFORM_VERSION: 1.6.6
+
+jobs:
+  terraform-eks:
+    runs-on: ubuntu-latest
+
+    steps:
+    # ---------------- CLONE SCM ----------------
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # ---------------- AWS Credentials ----------------
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    # ---------------- Install Terraform ----------------
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+    - name: Verify Terraform Installation
+      run: terraform --version
+
+    # ---------------- Terraform Init ----------------
+    - name: Terraform Init
+      working-directory: eks-install
+      run: terraform init
+
+    # ---------------- Terraform Plan ----------------
+    - name: Terraform Plan
+      working-directory: eks-install
+      run: terraform plan -out=tfplan
+
+    # ---------------- Terraform Apply ----------------
+    - name: Terraform Apply
+      working-directory: eks-install
+      run: terraform apply -auto-approve
+
+    # ---------------- Retrieve Terraform Output ----------------
+    - name: Retrieve Public IP
+      working-directory: eks-install
+      run: |
+        echo "Terraform Outputs:"
+        terraform output
+        PUBLIC_IP=$(terraform output -raw public_ip)
+        echo "Public IP: $PUBLIC_IP"
