@@ -44,12 +44,12 @@ jobs:
     # ---------------- Terraform Plan ----------------
     - name: Terraform Plan
       working-directory: eks-install
-      run: terraform plan -lock=false
+      run: terraform plan
 
     # ---------------- Terraform Apply ----------------
     - name: Terraform Apply
       working-directory: eks-install
-      run: terraform apply -auto-approve -lock=false
+      run: terraform apply -auto-approve
 
     # ---------------- Retrieve Terraform Output ----------------
     - name: Retrieve Public IP
